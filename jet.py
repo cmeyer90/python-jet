@@ -29,7 +29,11 @@ class jet(object):
 				r = request(method, url, data=json.dumps(post_data))
 		else:
 			r = request(method, url, headers=self.auth_header)
-		return json.loads(r.text)
+
+		try:
+			return json.loads(r.text)
+		except ValueError:
+			return r.text
 
 	def get_ready_order_urls(self):
 		endpoint = '/orders/ready'
@@ -38,7 +42,24 @@ class jet(object):
 	def get_order_details_by_url(self, order_url):
 		return self.make_request("GET", order_url)
 
-	def print_key(self):
-		return self.auth_header
+	def ack_order(self, jet_order_id):
+		ack_url = "/api/orders/%s/acknowledge" % jet_order_id
+		#TO-DO: Fix post-data for order items. 
+		#https://developer.jet.com/docs/acknowledge-order
+		post_data = {
+			"acknowledgement_status": "accepted", //this order will moved to the 'acknowledged' status
+			"alt_order_id": "232145",
+			"order_items": [
+					{
+						"order_item_acknowledgement_status": "fulfillable",
+						"order_item_id": "8f5ae15b6b414b00a1b9d6ad99166a00",
+						"alt_order_item_id": "76-i105"
+					}
+				]
+			}
+		return self.make_request("GET", ack_url, post_data)
+
+	#def print_key(self):
+	#	return self.auth_header
 
 
