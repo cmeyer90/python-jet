@@ -2,38 +2,43 @@ import json
 from requests import request
 
 #base URL
-base_url = 'https://merchant-api.jet.com/api/'
+base_url = 'https://merchant-api.jet.com/api'
 
-class python_jet(object):
-	#snakes om a plane
+class jet(object):
+	#snakes on a plane
 	def __init__(self, jet_user, jet_secret):
+		self.auth_header = False
 		params = { 
-			post_data:
+			"post_data":
 				{
 				"user":jet_user,
 				"pass":jet_secret
 				}
 			}
-		key_response = make_request("GET", base_url+"token", **params)
+		key_response = self.make_request("POST", "/token", **params)
 		key = key_response['id_token'].encode()
-		self.auth_header = {"Authorization":key}
+		self.auth_header = {"Authorization":"Bearer %s" % key}
 
 	def make_request(self, method, url, **kwargs):
-		if post_data:
+		url = base_url + url
+		if "post_data" in kwargs:
+			post_data = kwargs['post_data']
 			if self.auth_header:
 				r = request(method, url, data=json.dumps(post_data), headers=self.auth_header)
 			else:
 				r = request(method, url, data=json.dumps(post_data))
 		else:
 			r = request(method, url, headers=self.auth_header)
+		return json.loads(r.text)
 
-		return json.loads(r)
-
-	def get_ready_orders():
+	def get_ready_order_urls(self):
 		endpoint = '/orders/ready'
-		return make_request("GET", url+endpoint)
+		return self.make_request("GET", endpoint)['order_urls']
+
+	def get_order_details_by_url(self, order_url):
+		return self.make_request("GET", order_url)
 
 	def print_key(self):
-		print self.auth_header
-		
+		return self.auth_header
+
 
