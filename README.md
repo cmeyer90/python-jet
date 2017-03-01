@@ -1,37 +1,28 @@
-## Welcome to GitHub Pages
+# snakesonaplane - a Python Interface for the Jet developer API
 
-You can use the [editor on GitHub](https://github.com/cmeyer90/snakesonaplane/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This project is a work in progress! Use at your own risk for integrating with Jet. When making a pull request, please use tabs!
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Usage
 
-### Markdown
+Simply import the module and create a new jet object:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
 ```
+from snakesonaplane import jet
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+jet_user = "USER_KEY"
+jet_secret = "SECRET_KEY"
 
-### Jekyll Themes
+r = jet(jet_user,jet_secret)
+```
+...and use the object to work with the API:
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/cmeyer90/snakesonaplane/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```
+#acknowledge new order on Jet
+for url in r.get_ready_order_urls():
+	order_id = r.get_order_details_by_url(url)['merchant_order_id']
+	print r.ack_order(order_id)
+```  
 
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### To-do
+ - finish adding all API calls
+ - update acknowledgement method 
