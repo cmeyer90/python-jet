@@ -34,6 +34,8 @@ class jet(object):
 			return json.loads(r.text)
 		except ValueError:
 			return r.text
+			#request_exec = r.text
+			#raise request_exec
 
 	def get_ready_order_urls(self):
 		endpoint = '/orders/ready'
@@ -42,22 +44,24 @@ class jet(object):
 	def get_order_details_by_url(self, order_url):
 		return self.make_request("GET", order_url)
 
-	def ack_order(self, jet_order_id):
-		ack_url = "/api/orders/%s/acknowledge" % jet_order_id
-		#TO-DO: Fix post-data for order items. 
-		#https://developer.jet.com/docs/acknowledge-order
-		post_data = {
-			"acknowledgement_status": "accepted", //this order will moved to the 'acknowledged' status
-			"alt_order_id": "232145",
-			"order_items": [
-					{
-						"order_item_acknowledgement_status": "fulfillable",
-						"order_item_id": "8f5ae15b6b414b00a1b9d6ad99166a00",
-						"alt_order_item_id": "76-i105"
-					}
-				]
-			}
-		return self.make_request("GET", ack_url, post_data)
+	def ack_order(self, jet_order_id, ack_status, order_items, alt_order_id=None):
+		#Reference: https://developer.jet.com/docs/acknowledge-order
+		ack_url = "/orders/%s/acknowledge" % jet_order_id
+		post_data = {}
+		order_item_data = {}
+
+		order_item_data.update({"acknowledgement_status": ack_status})
+		if alt_order_id:
+			order_item_data.update({"alt_order_id": alt_order_id})
+		order_item_data.update({"order_items": order_items})
+		#order_items must be a list of dicts
+		#[{
+		#	"order_item_acknowledgement_status": "fulfillable",
+		#	"order_item_id": "8f5ae15b6b414b00a1b9d6ad99166a00",
+		#	"alt_order_item_id": "76-i105"
+		#}]
+		params = {"post_data" : order_item_data}
+		return self.make_request("PUT", ack_url, **params)
 
 	#def print_key(self):
 	#	return self.auth_header
