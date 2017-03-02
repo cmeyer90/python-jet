@@ -12,14 +12,14 @@ from snakesonaplane import jet
 jet_user = "USER_KEY"
 jet_secret = "SECRET_KEY"
 
-r = jet(jet_user,jet_secret)
+j = jet(jet_user,jet_secret)
 ```
 ...and use the object to work with the API:
 
 ```
 #acknowledge new orders on Jet
-for url in r.get_ready_order_urls():
-	order_details = r.get_order_details_by_url(url)
+for url in j.get_ready_order_urls():
+	order_details = j.get_order_details_by_url(url)
 	order_id = order_details['merchant_order_id']
 	order_items = order_details['order_items']
 
@@ -29,9 +29,9 @@ for url in r.get_ready_order_urls():
 		"order_item_acknowledgement_status": "fulfillable",
 		"order_item_id": order_item['order_item_id']
 		})
-	print r.ack_order(order_id, "accepted", fulfillable_items)
+	print j.ack_order(order_id, "accepted", fulfillable_items)
 ```  
 
 ### To-do
  - finish adding all API calls
- - update acknowledgement method 
+ - token timeouts
