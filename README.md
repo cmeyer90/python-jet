@@ -17,10 +17,19 @@ r = jet(jet_user,jet_secret)
 ...and use the object to work with the API:
 
 ```
-#acknowledge new order on Jet
+#acknowledge new orders on Jet
 for url in r.get_ready_order_urls():
-	order_id = r.get_order_details_by_url(url)['merchant_order_id']
-	print r.ack_order(order_id)
+	order_details = r.get_order_details_by_url(url)
+	order_id = order_details['merchant_order_id']
+	order_items = order_details['order_items']
+
+	fulfillable_items = []
+	for order_item in order_items:
+		fulfillable_items.append({
+		"order_item_acknowledgement_status": "fulfillable",
+		"order_item_id": order_item['order_item_id']
+		})
+	print r.ack_order(order_id, "accepted", fulfillable_items)
 ```  
 
 ### To-do
