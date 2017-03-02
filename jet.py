@@ -37,8 +37,8 @@ class jet(object):
 			#request_exec = r.text
 			#raise request_exec
 
-	def get_ready_order_urls(self):
-		endpoint = '/orders/ready'
+	def check_for_orders_by_status(self, status):
+		endpoint = '/orders/%s' % status
 		return self.make_request("GET", endpoint)['order_urls']
 
 	def get_order_details_by_url(self, order_url):

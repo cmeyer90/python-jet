@@ -18,7 +18,7 @@ j = jet(jet_user,jet_secret)
 
 ```
 #acknowledge new orders on Jet
-for url in j.get_ready_order_urls():
+for url in j.check_for_orders_by_status("ready"):
 	order_details = j.get_order_details_by_url(url)
 	order_id = order_details['merchant_order_id']
 	order_items = order_details['order_items']
