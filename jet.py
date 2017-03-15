@@ -37,11 +37,16 @@ class jet(object):
 			#request_exec = r.text
 			#raise request_exec
 
-	def check_for_orders_by_status(self, status):
+	def build_request(self, url, alt_order_id, arr_name):
+		#to-do		
+
+	#orders API
+
+	def check_for_orders(self, status):
 		endpoint = '/orders/%s' % status
 		return self.make_request("GET", endpoint)['order_urls']
 
-	def get_order_details_by_url(self, order_url):
+	def check_order_details_by_url(self, order_url):
 		return self.make_request("GET", order_url)
 
 	def ack_order(self, jet_order_id, ack_status, order_items, alt_order_id=None):
@@ -62,6 +67,33 @@ class jet(object):
 		#}]
 		params = {"post_data" : order_item_data}
 		return self.make_request("PUT", ack_url, **params)
+
+	def ship_orders(self, jet_order_id, alt_order_id, shipments_array):
+		#Reference: https://developer.jet.com/docs/ship-order
+		ship_url = "/orders/%s/shipped" % jet_order_id
+		post_data = {}
+		shipment_data = {}
+
+		shipment_data.update({"shipments": shipments_array})
+		if alt_order_id:
+			shipment_data.update({"alt_order_id": alt_order_id})
+		#shipments must be a list of dicts
+		#[{
+		#	"alt_shipment_id": "12345",
+		#	"shipment_tracking_number": "1zxy67934234098",
+		#}]
+		params = {"post_data" : shipment_data}
+		return self.make_request("PUT", ship_url, **params)
+
+	def tag_order(self, jet_order_id, tag_string):
+		#Reference: https://developer.jet.com/docs/tag-order
+		tag_url = "/orders/%s/tag" % jet_order_id
+		post_data = {}
+		tag_data = {}
+
+		tag_data.update({"tag": tag_string})
+		params = {"post_data" : tag_data}
+		return self.make_request("PUT", tag_url, **params)
 
 	#def print_key(self):
 	#	return self.auth_header
