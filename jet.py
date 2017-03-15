@@ -18,6 +18,8 @@ class jet(object):
 		key_response = self.make_request("POST", "/token", **params)
 		key = key_response['id_token'].encode()
 		self.auth_header = {"Authorization":"Bearer %s" % key}
+		#check time auth_header was saved, use in new definition
+		#to figure out if it's close to expiring; request new key
 
 	def make_request(self, method, url, **kwargs):
 		url = base_url + url
