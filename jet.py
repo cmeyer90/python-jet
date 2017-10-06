@@ -17,9 +17,11 @@ class Jet(object):
         self.get_auth_header()
 
     def check_time_to_live_decorator(self, func):
-        if datetime.utcnow() > self.expires_on:
-            get_auth_header()
-        func()
+        def wrapper():
+            if datetime.utcnow() > self.expires_on:
+                get_auth_header()
+            func()
+        return wrapper
         
     def get_auth_header():
         self.key_response = self.make_request("POST", "/token", **self.params)
