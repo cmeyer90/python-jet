@@ -1,26 +1,35 @@
-import json
+import json, time
 from requests import request
 
-#base URL
 base_url = 'https://merchant-api.jet.com/api'
 
-class jet(object):
-    #snakes on a plane
+
+class Jet(object):
     def __init__(self, jet_user, jet_secret):
         self.auth_header = False
-        params = { 
+        
+        self.params = { 
             "post_data":
                 {
                 "user":jet_user,
                 "pass":jet_secret
                 }
             }
-        key_response = self.make_request("POST", "/token", **params)
-        key = key_response['id_token'].encode()
-        self.auth_header = {"Authorization":"Bearer %s" % key}
-        #check time auth_header was saved, use in new definition
-        #to figure out if it's close to expiring; request new key
+            
+        self.get_auth_header()
 
+    def check_time_to_live_decorator(self, func):
+        if time.time() - self.header_received_time > 10:
+            get_auth_header()
+        func()
+        
+    def get_auth_header():
+        self.header_received_time = time.time()
+        self.key_response = self.make_request("POST", "/token", **self.params)
+        self.key = key_response['id_token'].encode()
+        self.auth_header = {"Authorization":"Bearer %s" % key}
+
+    @check_time_to_live_decorator
     def make_request(self, method, url, **kwargs):
         url = base_url + url
         if "post_data" in kwargs:
@@ -38,19 +47,23 @@ class jet(object):
             return r.text
             #request_exec = r.text
             #raise request_exec
-
+            
+    @check_time_to_live_decorator
     def build_request(self, url, alt_order_id, arr_name):
+        pass
         #to-do        
 
     #orders API
-
+    @check_time_to_live_decorator
     def check_for_orders(self, status):
         endpoint = '/orders/%s' % status
         return self.make_request("GET", endpoint)['order_urls']
-
+        
+    @check_time_to_live_decorator
     def check_order_details_by_url(self, order_url):
         return self.make_request("GET", order_url)
-
+        
+    @check_time_to_live_decorator
     def ack_order(self, jet_order_id, ack_status, order_items, alt_order_id=None):
         #Reference: https://developer.jet.com/docs/acknowledge-order
         ack_url = "/orders/%s/acknowledge" % jet_order_id
@@ -69,7 +82,8 @@ class jet(object):
         #}]
         params = {"post_data" : order_item_data}
         return self.make_request("PUT", ack_url, **params)
-
+        
+    @check_time_to_live_decorator
     def ship_orders(self, jet_order_id, alt_order_id, shipments_array):
         #Reference: https://developer.jet.com/docs/ship-order
         ship_url = "/orders/%s/shipped" % jet_order_id
@@ -86,7 +100,8 @@ class jet(object):
         #}]
         params = {"post_data" : shipment_data}
         return self.make_request("PUT", ship_url, **params)
-
+        
+    @check_time_to_live_decorator
     def tag_order(self, jet_order_id, tag_string):
         #Reference: https://developer.jet.com/docs/tag-order
         tag_url = "/orders/%s/tag" % jet_order_id
