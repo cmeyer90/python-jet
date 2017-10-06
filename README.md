@@ -1,6 +1,6 @@
-# snakesonaplane - a Python Interface for the Jet developer API
+# snakesonaplane - a Python Interface for the Jet.com developer API
 
-This project is a work in progress! Use at your own risk for integrating with Jet.
+This project is a work in progress! Use at your own risk for integrating with the Jet seller API.
 
 ### Usage
 
@@ -34,4 +34,3 @@ for url in j.check_for_orders("ready"):
 
 ### To-do
  - finish adding all API calls
- - token timeouts
